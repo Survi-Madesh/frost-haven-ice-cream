@@ -561,7 +561,16 @@
                 button.textContent = "Placing Order...";
                 showMessage("", false);
 
+                let loggedInUser = null;
+                try {
+                    loggedInUser = JSON.parse(localStorage.getItem(USER_KEY) || "null");
+                } catch (e) {
+                    loggedInUser = null;
+                }
+
                 const checkoutRequest = {
+                    userId: loggedInUser ? Number(loggedInUser.id) : null,
+
                     customerName:
                         document.getElementById("fullName").value.trim(),
 
@@ -647,6 +656,27 @@
         document.addEventListener("DOMContentLoaded", () => {
             renderCheckoutSummary();
             updateCartCount();
+
+            // Auto pre-fill user info if logged in
+            try {
+                const user = JSON.parse(localStorage.getItem(USER_KEY) || "null");
+                if (user) {
+                    if (user.name && document.getElementById("fullName")) {
+                        document.getElementById("fullName").value = user.name;
+                    }
+                    if (user.email && document.getElementById("email")) {
+                        document.getElementById("email").value = user.email;
+                    }
+                    if (user.phone && document.getElementById("phone")) {
+                        document.getElementById("phone").value = user.phone;
+                    }
+                    if (user.address && document.getElementById("address")) {
+                        document.getElementById("address").value = user.address;
+                    }
+                }
+            } catch (e) {
+                console.warn("Could not prefill user info:", e);
+            }
 
             const logoutButton =
                 document.getElementById("logout-button");

@@ -477,28 +477,49 @@
             container.replaceChildren(loading);
 
             try {
-                const response = await fetch("/api/orders", {
+                let loggedInUser = null;
+                try {
+                    loggedInUser = JSON.parse(localStorage.getItem(USER_KEY) || "null");
+                } catch (e) {
+                    loggedInUser = null;
+                }
+
+                // If logged in, fetch user orders or all orders
+                const endpoint = (loggedInUser && loggedInUser.id)
+                    ? `/api/orders/user/${loggedInUser.id}`
+                    : "/api/orders";
+
+                let response = await fetch(endpoint, {
                     method: "GET",
-                    headers: {
-                        "Accept": "application/json"
-                    }
+                    headers: { "Accept": "application/json" }
                 });
 
-                if (!response.ok) {
-                    throw new Error(
-                        `Server returned ${response.status}`
-                    );
+                let orders = [];
+
+                if (response.ok) {
+                    orders = await response.json();
                 }
 
-                const orders = await response.json();
-
-                if (!Array.isArray(orders)) {
-                    throw new Error(
-                        "Unexpected response from the server."
-                    );
+                // If user endpoint returned empty, check all orders for matching name or phone
+                if ((!Array.isArray(orders) || orders.length === 0) && loggedInUser) {
+                    try {
+                        const fallbackResp = await fetch("/api/orders");
+                        if (fallbackResp.ok) {
+                            const allOrders = await fallbackResp.json();
+                            if (Array.isArray(allOrders)) {
+                                orders = allOrders.filter(o =>
+                                    (o.userId && Number(o.userId) === Number(loggedInUser.id)) ||
+                                    (loggedInUser.name && o.customerName && o.customerName.toLowerCase() === loggedInUser.name.toLowerCase()) ||
+                                    (loggedInUser.phone && o.phone && o.phone === loggedInUser.phone)
+                                );
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("Fallback order fetch error:", e);
+                    }
                 }
 
-                if (orders.length === 0) {
+                if (!Array.isArray(orders) || orders.length === 0) {
                     showOrdersMessage(
                         "No Orders Yet",
                         "Your next favorite ice cream is waiting for you.",

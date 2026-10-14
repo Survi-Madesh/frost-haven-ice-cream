@@ -51,6 +51,9 @@ public class OrderController {
             }
 
             Order order = new Order();
+            if (request.getUserId() != null) {
+                order.setUserId(request.getUserId());
+            }
             order.setCustomerName(request.getCustomerName().trim());
             order.setPhone(request.getPhone().trim());
             order.setAddress(request.getDeliveryAddress().trim());
@@ -122,6 +125,7 @@ public class OrderController {
 
     public static class CheckoutRequest {
 
+        private Integer userId;
         private String customerName;
         private String email;
         private String phone;
@@ -130,6 +134,14 @@ public class OrderController {
         private List<OrderItem> items;
 
         public CheckoutRequest() {
+        }
+
+        public Integer getUserId() {
+            return userId;
+        }
+
+        public void setUserId(Integer userId) {
+            this.userId = userId;
         }
 
         public String getCustomerName() {
