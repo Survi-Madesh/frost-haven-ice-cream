@@ -126,7 +126,46 @@ function updateCartCount() {
         element.textContent = count;
     });
 }
-// Load products from Spring Boot
+const DEFAULT_PRODUCTS = [
+    {
+        id: 1,
+        productName: "Classic Strawberry Swirl",
+        description: "Handcrafted with fresh farm-picked strawberries, blended into velvety rich cream with strawberry ribbons.",
+        price: 149.0,
+        image: "strawberry.jpg",
+        category: "strawberry",
+        stock: 25
+    },
+    {
+        id: 2,
+        productName: "Belgian Dark Chocolate",
+        description: "Intense Belgian dark chocolate infused with cocoa chips for the ultimate chocolate indulgence.",
+        price: 189.0,
+        image: "chocolate.jpg",
+        category: "chocolate",
+        stock: 30
+    },
+    {
+        id: 3,
+        productName: "Alphonso Mango Delight",
+        description: "Sun-ripened Alphonso mango pulp churned into fresh, sweet, and tropical sunshine in every scoop.",
+        price: 169.0,
+        image: "mango.jpg",
+        category: "mango",
+        stock: 20
+    },
+    {
+        id: 4,
+        productName: "Wild Blackcurrant Bliss",
+        description: "Tangy wild blackcurrants swirled with smooth Madagascar vanilla cream for an exquisite flavor contrast.",
+        price: 179.0,
+        image: "blackcurrant.jpg",
+        category: "black currant",
+        stock: 18
+    }
+];
+
+// Load products from Spring Boot (with instant default fallback)
 async function loadProducts() {
     try {
         const response = await fetch("/api/products");
@@ -137,33 +176,20 @@ async function loadProducts() {
 
         const products = await response.json();
 
-        if (!Array.isArray(products)) {
-            throw new Error("Invalid product response.");
+        if (Array.isArray(products) && products.length > 0) {
+            allProducts = products;
+        } else {
+            allProducts = DEFAULT_PRODUCTS;
         }
-
-        allProducts = products;
 
         renderProducts(getFilteredAndSortedProducts());
         loadProductDetails();
 
     } catch (error) {
-        console.error("Product loading error:", error);
-
-        const list = document.getElementById("product-list");
-
-        if (list) {
-            list.textContent =
-                "Unable to load products. Please refresh and try again.";
-        }
-
-        const details = document.getElementById("product-details");
-
-        if (details) {
-            details.textContent =
-                "Unable to load product details. Please try again.";
-        }
-
-        updateProductCount(0);
+        console.warn("Product loading fallback:", error);
+        allProducts = DEFAULT_PRODUCTS;
+        renderProducts(getFilteredAndSortedProducts());
+        loadProductDetails();
     }
 }
 
