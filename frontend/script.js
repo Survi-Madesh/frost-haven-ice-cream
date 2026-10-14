@@ -132,7 +132,7 @@ const DEFAULT_PRODUCTS = [
         productName: "Classic Strawberry Swirl",
         description: "Handcrafted with fresh farm-picked strawberries, blended into velvety rich cream with strawberry ribbons.",
         price: 149.0,
-        image: "strawberry.jpg",
+        image: "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=600&q=80",
         category: "strawberry",
         stock: 25
     },
@@ -141,7 +141,7 @@ const DEFAULT_PRODUCTS = [
         productName: "Belgian Dark Chocolate",
         description: "Intense Belgian dark chocolate infused with cocoa chips for the ultimate chocolate indulgence.",
         price: 189.0,
-        image: "chocolate.jpg",
+        image: "https://images.unsplash.com/photo-1570197788417-0e82375c9371?auto=format&fit=crop&w=600&q=80",
         category: "chocolate",
         stock: 30
     },
@@ -150,7 +150,7 @@ const DEFAULT_PRODUCTS = [
         productName: "Alphonso Mango Delight",
         description: "Sun-ripened Alphonso mango pulp churned into fresh, sweet, and tropical sunshine in every scoop.",
         price: 169.0,
-        image: "mango.jpg",
+        image: "https://images.unsplash.com/photo-1505394033641-40c6ad1178d7?auto=format&fit=crop&w=600&q=80",
         category: "mango",
         stock: 20
     },
@@ -159,7 +159,7 @@ const DEFAULT_PRODUCTS = [
         productName: "Wild Blackcurrant Bliss",
         description: "Tangy wild blackcurrants swirled with smooth Madagascar vanilla cream for an exquisite flavor contrast.",
         price: 179.0,
-        image: "blackcurrant.jpg",
+        image: "https://images.unsplash.com/photo-1560008581-09826d1de69e?auto=format&fit=crop&w=600&q=80",
         category: "black currant",
         stock: 18
     }
@@ -1142,3 +1142,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadAdminOrders();
 });
+
+// Bind functions to window so inline onclick handlers work with ES module script
+if (typeof window !== "undefined") {
+    window.viewProduct = viewProduct;
+    window.addToCart = addToCart;
+    window.filterProducts = filterProducts;
+    window.sortProducts = sortProducts;
+    window.updateQuantity = updateQuantity;
+    window.removeFromCart = removeFromCart;
+    window.clearCart = clearCart;
+}
